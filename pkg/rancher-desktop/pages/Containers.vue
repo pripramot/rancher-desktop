@@ -172,6 +172,8 @@ export default defineComponent({
   title:      'Containers',
   components: { SortableTable, BadgeState, Banner },
   data() {
+    const noop = (...args) => {};
+
     return {
       /** @type import('@pkg/config/settings').Settings | undefined */
       settings:                   undefined,
@@ -190,7 +192,7 @@ export default defineComponent({
        * removed in beforeUnmount and avoid a listener leak.
        * @type Function
        */
-      onSettingsRead:       () => {},
+      onSettingsRead:       noop,
       headers:              [
         {
           name:  'containerState',

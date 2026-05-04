@@ -39,7 +39,7 @@ enum ImageManagerStates {
 export default defineComponent({
   components: { Images },
   data() {
-    const noop = (..._args: any[]) => {};
+    const noop = (...args: any[]) => {};
 
     return {
       settings:             defaultSettings,
