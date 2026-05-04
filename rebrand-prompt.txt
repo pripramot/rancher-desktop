@@ -1,0 +1,29 @@
+You are helping me rebrand this project from "Rancher Desktop" to "Gittisak Desktop".
+This repo is a fork of https://github.com/rancher-sandbox/rancher-desktop (Apache 2.0 License).
+
+Please do the following:
+
+1. Update NOTICE file — Create or update a file named `NOTICE` at the root with this content:
+
+   Gittisak Desktop
+   Based on Rancher Desktop (https://github.com/rancher-sandbox/rancher-desktop)
+   Original Copyright (c) 2021 SUSE LLC
+   Licensed under the Apache License, Version 2.0
+   Modified by Gittisak Pramot (pripramot), 2026
+
+2. Keep LICENSE file untouched — Do NOT modify or delete the `LICENSE` file. Apache 2.0 requires it to remain.
+
+3. Update `package.json` — Change the "name" field from "rancher-desktop" to "gittisak-desktop"
+   and update the "description" field to something appropriate.
+
+4. Update `README.md` — Replace occurrences of "Rancher Desktop" with "Gittisak Desktop"
+   in the title and description sections only.
+   Keep all technical instructions, links to original docs, and license sections intact.
+
+5. Do NOT:
+   - Delete or modify the LICENSE file
+   - Change any source code logic
+   - Modify workflow files in .github/
+   - Change dependency names in yarn.lock or Go modules
+
+After making changes, show me a summary of what was modified.
