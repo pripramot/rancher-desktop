@@ -23,6 +23,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/Masterminds/log-go"
 	"github.com/containers/gvisor-tap-vsock/pkg/types"
@@ -31,6 +32,8 @@ import (
 const (
 	exposeAPI   = "/services/forwarder/expose"
 	unexposeAPI = "/services/forwarder/unexpose"
+	// apiRequestTimeout is the maximum time allowed for a single API request.
+	apiRequestTimeout = 30 * time.Second
 )
 
 var (
@@ -49,8 +52,10 @@ type APIForwarder struct {
 // NewAPIForwarder returns a new instance of APIForwarder.
 func NewAPIForwarder(baseURL string) *APIForwarder {
 	return &APIForwarder{
-		baseURL:    baseURL,
-		httpClient: http.DefaultClient,
+		baseURL: baseURL,
+		httpClient: &http.Client{
+			Timeout: apiRequestTimeout,
+		},
 	}
 }
 

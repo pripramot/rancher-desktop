@@ -40,10 +40,14 @@ export default defineComponent({
   components: { Images },
   data() {
     return {
-      settings:           defaultSettings,
-      images:             [] as Image[],
-      imageNamespaces:    [] as string[],
-      supportsNamespaces: true,
+      settings:             defaultSettings,
+      images:               [] as Image[],
+      imageNamespaces:      [] as string[],
+      supportsNamespaces:   true,
+      onImagesCheckState:   undefined as ((...args: any[]) => void) | undefined,
+      onSettingsUpdate:     undefined as ((...args: any[]) => void) | undefined,
+      onImagesNamespaces:   undefined as ((...args: any[]) => void) | undefined,
+      onSettingsRead:       undefined as ((...args: any[]) => void) | undefined,
     };
   },
 
@@ -116,34 +120,39 @@ export default defineComponent({
       }
     });
 
-    ipcRenderer.on('images-check-state', (event, state) => {
+    this.onImagesCheckState = (event: any, state: any) => {
       this.setImageManagerState(state);
-    });
+    };
+    ipcRenderer.on('images-check-state', this.onImagesCheckState);
 
     ipcRenderer.invoke('images-check-state').then((state) => {
       this.setImageManagerState(state);
     });
 
-    ipcRenderer.on('settings-update', (event, settings) => {
+    this.onSettingsUpdate = (event: any, settings: any) => {
       // TODO: put in a status bar
       this.$data.settings = settings;
       this.checkSelectedNamespace();
-    });
+    };
+    ipcRenderer.on('settings-update', this.onSettingsUpdate);
 
     (async() => {
       this.images = await ipcRenderer.invoke('images-mounted', true);
     })();
 
-    ipcRenderer.on('images-namespaces', (event, namespaces) => {
+    this.onImagesNamespaces = (event: any, namespaces: any) => {
       // TODO: Use a specific message to indicate whether or not messages are supported.
       this.imageNamespaces = namespaces;
       this.supportsNamespaces = namespaces.length > 0;
       this.checkSelectedNamespace();
-    });
+    };
+    ipcRenderer.on('images-namespaces', this.onImagesNamespaces);
     ipcRenderer.send('images-namespaces-read');
-    ipcRenderer.on('settings-read', (event, settings) => {
+
+    this.onSettingsRead = (event: any, settings: any) => {
       this.settings = settings;
-    });
+    };
+    ipcRenderer.on('settings-read', this.onSettingsRead);
     ipcRenderer.send('settings-read');
 
     ipcRenderer.on('extensions/changed', this.fetchExtensions);
@@ -152,6 +161,10 @@ export default defineComponent({
   beforeUnmount() {
     ipcRenderer.invoke('images-mounted', false);
     ipcRenderer.removeAllListeners('images-changed');
+    ipcRenderer.removeListener('images-check-state', this.onImagesCheckState);
+    ipcRenderer.removeListener('settings-update', this.onSettingsUpdate);
+    ipcRenderer.removeListener('images-namespaces', this.onImagesNamespaces);
+    ipcRenderer.removeListener('settings-read', this.onSettingsRead);
     ipcRenderer.removeListener('extensions/changed', this.fetchExtensions);
   },
 
