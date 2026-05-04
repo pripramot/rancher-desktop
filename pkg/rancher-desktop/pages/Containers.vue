@@ -188,9 +188,9 @@ export default defineComponent({
       /**
        * Stored reference to the settings-read IPC listener so it can be
        * removed in beforeUnmount and avoid a listener leak.
-       * @type Function | undefined
+       * @type Function
        */
-      onSettingsRead:       undefined,
+      onSettingsRead:       () => {},
       headers:              [
         {
           name:  'containerState',

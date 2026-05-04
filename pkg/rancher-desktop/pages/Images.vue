@@ -39,15 +39,17 @@ enum ImageManagerStates {
 export default defineComponent({
   components: { Images },
   data() {
+    const noop = (..._args: any[]) => {};
+
     return {
       settings:             defaultSettings,
       images:               [] as Image[],
       imageNamespaces:      [] as string[],
       supportsNamespaces:   true,
-      onImagesCheckState:   undefined as ((...args: any[]) => void) | undefined,
-      onSettingsUpdate:     undefined as ((...args: any[]) => void) | undefined,
-      onImagesNamespaces:   undefined as ((...args: any[]) => void) | undefined,
-      onSettingsRead:       undefined as ((...args: any[]) => void) | undefined,
+      onImagesCheckState:   noop as (...args: any[]) => void,
+      onSettingsUpdate:     noop as (...args: any[]) => void,
+      onImagesNamespaces:   noop as (...args: any[]) => void,
+      onSettingsRead:       noop as (...args: any[]) => void,
     };
   },
 
