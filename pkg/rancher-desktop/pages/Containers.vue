@@ -172,6 +172,8 @@ export default defineComponent({
   title:      'Containers',
   components: { SortableTable, BadgeState, Banner },
   data() {
+    const noop = (...args) => {};
+
     return {
       /** @type import('@pkg/config/settings').Settings | undefined */
       settings:                   undefined,
@@ -185,6 +187,12 @@ export default defineComponent({
        * @type ReturnType<typeof setTimeout> | undefined
        */
       subscribeTimer:       undefined,
+      /**
+       * Stored reference to the settings-read IPC listener so it can be
+       * removed in beforeUnmount and avoid a listener leak.
+       * @type Function
+       */
+      onSettingsRead:       noop,
       headers:              [
         {
           name:  'containerState',
@@ -303,10 +311,12 @@ export default defineComponent({
       description: '',
     });
 
-    ipcRenderer.on('settings-read', (event, settings) => {
+    this.onSettingsRead = (event, settings) => {
       this.settings = settings;
       this.subscribe().catch(console.error);
-    });
+    };
+
+    ipcRenderer.on('settings-read', this.onSettingsRead);
 
     ipcRenderer.send('settings-read');
 
@@ -315,6 +325,7 @@ export default defineComponent({
     this.subscribe().catch(console.error);
   },
   beforeUnmount() {
+    ipcRenderer.removeListener('settings-read', this.onSettingsRead);
     ipcRenderer.removeListener('settings-update', this.updateSettings);
     this.$store.dispatch('container-engine/unsubscribe').catch(console.error);
     clearTimeout(this.subscribeTimer);
@@ -324,7 +335,7 @@ export default defineComponent({
       clearTimeout(this.subscribeTimer);
       try {
         if (!window.ddClient || !this.isK8sReady || !this.settings) {
-          setTimeout(() => this.subscribe(), 1_000);
+          this.subscribeTimer = setTimeout(() => this.subscribe(), 1_000);
           return;
         }
         await this.$store.dispatch('container-engine/subscribe', {
